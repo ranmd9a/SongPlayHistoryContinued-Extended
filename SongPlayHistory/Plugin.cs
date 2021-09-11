@@ -61,6 +61,9 @@ namespace SongPlayHistoryContinued
             BS_Utils.Plugin.MultiLevelDidFinishEvent -= OnMultilevelFinished;
 
             SPHModel.BackupRecords();
+
+            Log.Debug("Removing Harmony patches...");
+            _harmony.UnpatchAll("com.github.swift-kim.SongPlayHistory");
         }
 
         private void OnGameSceneLoaded()
