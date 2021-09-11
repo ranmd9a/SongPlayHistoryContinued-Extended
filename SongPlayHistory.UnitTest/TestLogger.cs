@@ -1,5 +1,4 @@
-﻿using IPA.Logging;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 namespace SongPlayHistoryContinued.UnitTest
 {

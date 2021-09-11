@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -114,7 +113,7 @@ namespace SongPlayHistoryContinued
 
             if (config.SortByDate)
             {
-                records=records.OrderByDescending(s=>s.ModifiedScore).ToList();
+                records = records.OrderByDescending(s => s.ModifiedScore).ToList();
             }
 
             string maxCombo = stats.validScore ? (stats.fullCombo ? "FULL COMBO" : $"{stats.maxCombo} ({records.Last().Miss}miss)") : "-";

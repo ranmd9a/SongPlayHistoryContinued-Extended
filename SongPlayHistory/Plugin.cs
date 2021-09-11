@@ -1,13 +1,13 @@
-﻿using BeatSaberMarkupLanguage.Settings;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using BeatSaberMarkupLanguage.Settings;
 using BS_Utils.Gameplay;
 using HarmonyLib;
 using IPA;
 using IPA.Config;
 using IPA.Config.Stores;
 using IPA.Logging;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace SongPlayHistoryContinued
 {

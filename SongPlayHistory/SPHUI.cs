@@ -1,10 +1,10 @@
-﻿using BS_Utils.Utilities;
-using HMUI;
-using IPA.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BS_Utils.Utilities;
+using HMUI;
+using IPA.Utilities;
 using TMPro;
 using UnityEngine;
 using VRUIControls;
@@ -239,7 +239,7 @@ namespace SongPlayHistoryContinued
                 var text = column.GetComponentsInChildren<TextMeshProUGUI>().First(x => x.name == "Value");
                 text.SetText(value);
             }
-            
+
             /*
             if (BeatSaberUI.IsSolo && LevelStatsView != null)
             {
