@@ -97,12 +97,12 @@ namespace SongPlayHistoryContinued
     [HarmonyPatch("ShowStats", MethodType.Normal)]
     class LevelStatsViewPatches : LevelStatsView
     {
-        static void Postfix(ref LevelStatsViewPatches _instance)
+        static void Postfix(ref LevelStatsViewPatches __instance)
         {
             Plugin.Log?.Debug("Change Max Combo text");
             var beatmap = BeatSaberUI.LevelDetailViewController?.selectedDifficultyBeatmap;
             GetMaxComboAndMiss(beatmap);
-            _instance._maxComboText.text = Plugin._maxCombo;
+            __instance._maxComboText.text = Plugin._maxCombo;
         }
 
         static void GetMaxComboAndMiss(IDifficultyBeatmap beatmap)

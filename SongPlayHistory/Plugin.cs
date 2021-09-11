@@ -63,7 +63,7 @@ namespace SongPlayHistoryContinued
             SPHModel.BackupRecords();
 
             Log.Debug("Removing Harmony patches...");
-            _harmony.UnpatchAll("com.github.swift-kim.SongPlayHistory");
+            _harmony.UnpatchAll(HarmonyId);
         }
 
         private void OnGameSceneLoaded()
