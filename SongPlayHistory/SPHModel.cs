@@ -14,6 +14,7 @@ namespace SongPlayHistoryContinued
         public int RawScore = 0;
         public int LastNote = 0;
         public int Param = 0;
+        public string Miss = "?";
     }
 
     [Flags]
@@ -120,7 +121,8 @@ namespace SongPlayHistoryContinued
                 ModifiedScore = result.modifiedScore,
                 RawScore = result.rawScore,
                 LastNote = cleared ? -1 : result.goodCutsCount + result.badCutsCount + result.missedCount,
-                Param = (int)param
+                Param = (int)param,
+                Miss = result.missedCount.ToString()
             };
 
             var beatmapCharacteristicName = beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;

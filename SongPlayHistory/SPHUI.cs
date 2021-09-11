@@ -197,6 +197,7 @@ namespace SongPlayHistoryContinued
                     builder.Append($"<size=2.5><color=#1a252bff>{localDateTime:d}</color></size>");
                     builder.Append($"<size=3.5><color=#0f4c75ff> {r.ModifiedScore}</color></size>");
                     builder.Append($"<size=3.5><color=#368cc6ff> {accuracy:0.00}%</color></size>");
+                    builder.Append($"<size=3.5><color=#ab031fff> {r.Miss}miss</color></size>");
                     if (param.Length > 0)
                     {
                         builder.Append($"<size=2><color=#1a252bff> {param}</color></size>");
@@ -222,7 +223,7 @@ namespace SongPlayHistoryContinued
             }
         }
 
-        public void SetStats(IDifficultyBeatmap beatmap, PlayerLevelStatsData stats)
+        public void SetStats(IDifficultyBeatmap beatmap, PlayerLevelStatsData stats, List<Record> records)
         {
             if (beatmap == null || stats == null)
             {
@@ -238,8 +239,9 @@ namespace SongPlayHistoryContinued
                 var text = column.GetComponentsInChildren<TextMeshProUGUI>().First(x => x.name == "Value");
                 text.SetText(value);
             }
-
-            if (!BeatSaberUI.IsSolo && LevelStatsView != null)
+            
+            /*
+            if (BeatSaberUI.IsSolo && LevelStatsView != null)
             {
                 var maxCombo = LevelStatsView.GetComponentsInChildren<RectTransform>().First(x => x.name == "MaxCombo");
                 var highscore = LevelStatsView.GetComponentsInChildren<RectTransform>().First(x => x.name == "Highscore");
@@ -247,10 +249,11 @@ namespace SongPlayHistoryContinued
                 var notesCount = beatmap.beatmapData.cuttableNotesCount;
                 var maxScore = ScoreModel.MaxRawScoreForNumberOfNotes(notesCount);
                 var estimatedAcc = stats.highScore / (float)maxScore * 100f;
-                SetValue(maxCombo, stats.validScore ? $"{stats.maxCombo}" : "-");
+                SetValue(maxCombo, stats.validScore ? $"{stats.maxCombo} ({records.Last().Miss}miss)" : "-");
                 SetValue(highscore, stats.validScore ? $"{stats.highScore} ({estimatedAcc:0.00}%)" : "-");
                 SetValue(maxRank, stats.validScore ? RankModel.GetRankName(stats.maxRank) : "-");
             }
+            */
             SetValue(PlayCount, stats.validScore ? stats.playCount.ToString() : "-");
         }
     }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using TMPro;
@@ -89,6 +91,34 @@ namespace SongPlayHistoryContinued
                 Plugin.Log?.Error("Error while loading a resource.\n" + ex.ToString());
                 return null;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(LevelStatsView))]
+    [HarmonyPatch("ShowStats", MethodType.Normal)]
+    class LevelStatsViewPatches : LevelStatsView
+    {
+        static void Postfix(ref LevelStatsViewPatches _instance)
+        {
+            Plugin.Log?.Debug("Change Max Combo text");
+            var beatmap = BeatSaberUI.LevelDetailViewController?.selectedDifficultyBeatmap;
+            GetMaxComboAndMiss(beatmap);
+            _instance._maxComboText.text = Plugin._maxCombo;
+        }
+
+        static void GetMaxComboAndMiss(IDifficultyBeatmap beatmap)
+        {
+            var config = PluginConfig.Instance;
+            var stats = SPHModel.GetPlayerStats(beatmap);
+            var records = SPHModel.GetRecords(beatmap);
+
+            if (config.SortByDate)
+            {
+                records=records.OrderByDescending(s=>s.ModifiedScore).ToList();
+            }
+
+            string maxCombo = stats.validScore ? (stats.fullCombo ? "FULL COMBO" : $"{stats.maxCombo} ({records.Last().Miss}miss)") : "-";
+            Plugin._maxCombo = maxCombo;
         }
     }
 }
