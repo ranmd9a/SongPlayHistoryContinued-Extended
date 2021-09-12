@@ -146,7 +146,7 @@ namespace SongPlayHistoryContinued
             try
             {
                 _pluginUI.SetRecords(beatmap, SPHModel.GetRecords(beatmap));
-                _pluginUI.SetStats(beatmap, SPHModel.GetPlayerStats(beatmap), SPHModel.GetRecords(beatmap));
+                _pluginUI.SetStats(beatmap, SPHModel.GetPlayerStats(beatmap));
             }
             catch (Exception ex) // Any UnityException
             {

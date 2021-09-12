@@ -223,7 +223,7 @@ namespace SongPlayHistoryContinued
             }
         }
 
-        public void SetStats(IDifficultyBeatmap beatmap, PlayerLevelStatsData stats, List<Record> records)
+        public void SetStats(IDifficultyBeatmap beatmap, PlayerLevelStatsData stats)
         {
             if (beatmap == null || stats == null)
             {
