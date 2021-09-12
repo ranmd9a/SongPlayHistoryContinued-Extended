@@ -116,7 +116,7 @@ namespace SongPlayHistoryContinued
                 records = records.OrderByDescending(s => s.ModifiedScore).ToList();
             }
 
-            string maxCombo = stats.validScore ? (stats.fullCombo ? "FULL COMBO" : $"{stats.maxCombo} ({records.Last().Miss}miss)") : "-";
+            string maxCombo = stats.validScore ? (stats.fullCombo ? "FULL COMBO" : $"{stats.maxCombo} ({records.First().Miss}miss)") : "-";
             Plugin._maxCombo = maxCombo;
         }
     }
