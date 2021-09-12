@@ -197,7 +197,16 @@ namespace SongPlayHistoryContinued
                     builder.Append($"<size=2.5><color=#1a252bff>{localDateTime:d}</color></size>");
                     builder.Append($"<size=3.5><color=#0f4c75ff> {r.ModifiedScore}</color></size>");
                     builder.Append($"<size=3.5><color=#368cc6ff> {accuracy:0.00}%</color></size>");
-                    builder.Append($"<size=3.5><color=#ab031fff> {r.Miss}miss</color></size>");
+                    
+                    if (r.Miss == "FC")
+                    {
+                        builder.Append($"<size=3.5><color=#e6b422ff> {r.Miss}</color></size>");
+                    }
+                    else
+                    {
+                        builder.Append($"<size=3.5><color=#ab031fff> {r.Miss}miss</color></size>");
+                    }
+
                     if (param.Length > 0)
                     {
                         builder.Append($"<size=2><color=#1a252bff> {param}</color></size>");

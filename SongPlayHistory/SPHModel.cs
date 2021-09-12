@@ -122,7 +122,7 @@ namespace SongPlayHistoryContinued
                 RawScore = result.rawScore,
                 LastNote = cleared ? -1 : result.goodCutsCount + result.badCutsCount + result.missedCount,
                 Param = (int)param,
-                Miss = (result.missedCount+result.badCutsCount).ToString()
+                Miss = result.fullCombo?"FC":(result.missedCount+result.badCutsCount).ToString()
             };
 
             var beatmapCharacteristicName = beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
