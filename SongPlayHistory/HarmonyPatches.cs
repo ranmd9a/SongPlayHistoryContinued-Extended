@@ -101,23 +101,34 @@ namespace SongPlayHistoryContinued
         {
             Plugin.Log?.Debug("Change Max Combo text");
             var beatmap = BeatSaberUI.LevelDetailViewController?.selectedDifficultyBeatmap;
-            GetMaxComboAndMiss(beatmap);
-            __instance._maxComboText.text = Plugin._maxCombo;
+            SetMaxComboAndMiss(beatmap, __instance);
         }
 
-        static void GetMaxComboAndMiss(IDifficultyBeatmap beatmap)
+        static void SetMaxComboAndMiss(IDifficultyBeatmap beatmap, LevelStatsViewPatches __instance)
         {
             var config = PluginConfig.Instance;
             var stats = SPHModel.GetPlayerStats(beatmap);
             var records = SPHModel.GetRecords(beatmap);
 
+            if (beatmap == null)
+            {
+                Plugin.Log?.Debug("No Beatmap Data");
+                return;
+            }
+
+            if (records.Count() == 0)
+            {
+                Plugin.Log?.Debug("No Play Records");
+                return;
+            }
+            
             if (config.SortByDate)
             {
                 records = records.OrderByDescending(s => s.ModifiedScore).ToList();
             }
 
             string maxCombo = stats.validScore ? (stats.fullCombo ? "FULL COMBO" : $"{stats.maxCombo} ({records.First().Miss}miss)") : "-";
-            Plugin._maxCombo = maxCombo;
+            __instance._maxComboText.text = maxCombo;
         }
     }
 }

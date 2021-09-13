@@ -250,6 +250,9 @@ namespace SongPlayHistoryContinued
             }
 
             /*
+            These old version code seem to be dead, but some coder need them.
+            So I don't delete them but just make them comment out.
+
             if (BeatSaberUI.IsSolo && LevelStatsView != null)
             {
                 var maxCombo = LevelStatsView.GetComponentsInChildren<RectTransform>().First(x => x.name == "MaxCombo");
@@ -263,6 +266,7 @@ namespace SongPlayHistoryContinued
                 SetValue(maxRank, stats.validScore ? RankModel.GetRankName(stats.maxRank) : "-");
             }
             */
+
             SetValue(PlayCount, stats.validScore ? stats.playCount.ToString() : "-");
         }
     }

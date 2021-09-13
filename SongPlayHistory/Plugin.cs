@@ -21,7 +21,6 @@ namespace SongPlayHistoryContinued
 
         private readonly Harmony _harmony;
         private bool _isPractice;
-        public static string _maxCombo;
 
         [Init]
         public Plugin(Logger logger, Config config)

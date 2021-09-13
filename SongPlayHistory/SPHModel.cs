@@ -83,6 +83,7 @@ namespace SongPlayHistoryContinued
             // Cancelled?
             if (result.levelEndStateType == LevelCompletionResults.LevelEndStateType.None)
             {
+                Plugin.Log?.Debug("Play Cancelled?");
                 return;
             }
 
