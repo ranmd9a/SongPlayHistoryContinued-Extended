@@ -1,10 +1,10 @@
 ﻿{
   "author": "peperoro",
   "description": "A score tracker with simple in-game UI.",
-  "gameVersion": "1.17.0",
+  "gameVersion": "1.19.0",
   "id": "SongPlayHistoryContinued",
   "name": "SongPlayHistoryContinued",
-  "version": "1.6.1",
+  "version": "1.8.0",
   "dependsOn": {
     "BSIPA": "^4.1.6",
     "BeatSaberMarkupLanguage": "^1.5.3",
