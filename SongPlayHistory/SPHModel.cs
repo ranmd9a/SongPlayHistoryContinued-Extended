@@ -15,6 +15,9 @@ namespace SongPlayHistoryContinued
         public int LastNote = 0;
         public int Param = 0;
         public string Miss = "?";
+        public string NoteJumpStartBeatOffset = null; // = 0.0f;
+        public string NoteJumpDurationTypeSettings = null;
+        public string NoteJumpFixedDuration = null;
     }
 
     [Flags]
@@ -125,6 +128,27 @@ namespace SongPlayHistoryContinued
                 Param = (int)param,
                 Miss = result.fullCombo?"FC":(result.missedCount+result.badCutsCount).ToString()
             };
+            var playerSpecificSettings = BS_Utils.Plugin.LevelData?.GameplayCoreSceneSetupData?.playerSpecificSettings;
+            var noteJumpDurationTypeSettings = playerSpecificSettings.noteJumpDurationTypeSettings;
+            record.NoteJumpDurationTypeSettings = noteJumpDurationTypeSettings.ToString();
+            if (noteJumpDurationTypeSettings == NoteJumpDurationTypeSettings.Dynamic)
+            {
+                // Dynamic
+                var noteJumpStartBeatOffset = playerSpecificSettings?.noteJumpStartBeatOffset;
+                if (noteJumpStartBeatOffset != null)
+                {
+                    record.NoteJumpStartBeatOffset = noteJumpStartBeatOffset.ToString();
+                }
+            }
+            else
+            {
+                // Static
+                var noteJumpFixedDuration = playerSpecificSettings?.noteJumpFixedDuration;
+                if (noteJumpFixedDuration != null)
+                {
+                    record.NoteJumpFixedDuration = noteJumpFixedDuration.ToString();
+                }
+            }
 
             var beatmapCharacteristicName = beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             var difficulty = $"{beatmap.level.levelID}___{(int)beatmap.difficulty}___{beatmapCharacteristicName}";

@@ -192,6 +192,42 @@ namespace SongPlayHistoryContinued
                         param = "?!";
                     }
                     var notesRemaining = notesCount - r.LastNote;
+                    string offsetText = "";
+                    var noteJumpDurationTypeSettings = r.NoteJumpDurationTypeSettings;
+                    if (noteJumpDurationTypeSettings == NoteJumpDurationTypeSettings.Static.ToString())
+                    {
+                        // noteJumpDurationTypeSettings が Static の場合
+                        offsetText = " " + r.NoteJumpFixedDuration + " (Static)";
+                    }
+                    else
+                    {
+                        // noteJumpDurationTypeSettings が Dynamic または保存されていない場合
+                        if (r.NoteJumpStartBeatOffset != null && r.NoteJumpStartBeatOffset != "")
+                        {
+                            var noteJumpStartBeatOffset = float.Parse(r.NoteJumpStartBeatOffset);
+                            switch (noteJumpStartBeatOffset)
+                            {
+                                case -0.5f:
+                                    offsetText = " Close";
+                                    break;
+                                case -0.25f:
+                                    offsetText = " Closer";
+                                    break;
+                                case 0f:
+                                    offsetText = " Default";
+                                    break;
+                                case 0.25f:
+                                    offsetText = " Further";
+                                    break;
+                                case 0.5f:
+                                    offsetText = " Far";
+                                    break;
+                                default:
+                                    //offsetText = noteJumpStartBeatOffset.ToString();
+                                    break;
+                            }
+                        }
+                    }
 
                     builder.Append(Space(truncated.Count - truncated.IndexOf(r) - 1));
                     builder.Append($"<size=2.5><color=#1a252bff>{localDateTime:d}</color></size>");
@@ -214,11 +250,11 @@ namespace SongPlayHistoryContinued
                     if (PluginConfig.Instance.ShowFailed)
                     {
                         if (r.LastNote == -1)
-                            builder.Append($"<size=2.5><color=#1a252bff> cleared</color></size>");
+                            builder.Append($"<size=2.5><color=#1a252bff> cleared{offsetText}</color></size>");
                         else if (r.LastNote == 0) // old record (success, fail, or practice)
-                            builder.Append($"<size=2.5><color=#584153ff> unknown</color></size>");
+                            builder.Append($"<size=2.5><color=#584153ff> unknown{offsetText}</color></size>");
                         else
-                            builder.Append($"<size=2.5><color=#ff5722ff> +{notesRemaining} notes</color></size>");
+                            builder.Append($"<size=2.5><color=#ff5722ff> +{notesRemaining} notes{offsetText}</color></size>");
                     }
                     builder.Append(Space(truncated.IndexOf(r)));
                     builder.AppendLine();
