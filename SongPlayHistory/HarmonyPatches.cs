@@ -108,7 +108,7 @@ namespace SongPlayHistoryContinued
         {
             var config = PluginConfig.Instance;
             var stats = SPHModel.GetPlayerStats(beatmap);
-            var records = SPHModel.GetRecords(beatmap);
+            var records = SPHModel.GetRecords(beatmap, true);
 
             if (beatmap == null)
             {

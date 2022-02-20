@@ -56,7 +56,7 @@ namespace SongPlayHistoryContinued
 
         private static DateTime _voteLastWritten;
 
-        public static List<Record> GetRecords(IDifficultyBeatmap beatmap)
+        public static List<Record> GetRecords(IDifficultyBeatmap beatmap, bool excludeFailed = false)
         {
             var config = PluginConfig.Instance;
             var beatmapCharacteristicName = beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
@@ -65,7 +65,7 @@ namespace SongPlayHistoryContinued
             if (Records.TryGetValue(difficulty, out IList<Record> records))
             {
                 // LastNote = -1 (cleared), 0 (undefined), n (failed)
-                var filtered = config.ShowFailed ? records : records.Where(s => s.LastNote <= 0);
+                var filtered = config.ShowFailed && !excludeFailed ? records : records.Where(s => s.LastNote <= 0);
                 var ordered = filtered.OrderByDescending(s => config.SortByDate ? s.Date : s.ModifiedScore);
                 return ordered.ToList();
             }
