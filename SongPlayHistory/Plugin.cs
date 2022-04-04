@@ -5,9 +5,13 @@ using BeatSaberMarkupLanguage.Settings;
 using BS_Utils.Gameplay;
 using HarmonyLib;
 using IPA;
-using IPA.Config;
 using IPA.Config.Stores;
 using IPA.Logging;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using BS_Utils.Utilities;
+using Config = IPA.Config.Config;
 
 namespace SongPlayHistoryContinued
 {
@@ -38,12 +42,11 @@ namespace SongPlayHistoryContinued
         [OnStart]
         public void OnStart()
         {
-            BS_Utils.Utilities.BSEvents.gameSceneLoaded += OnGameSceneLoaded;
-            BS_Utils.Plugin.LevelDidFinishEvent += OnLevelFinished;
-            BS_Utils.Plugin.MultiLevelDidFinishEvent += OnMultilevelFinished;
+            BSEvents.gameSceneLoaded += OnGameSceneLoaded;
+            BSEvents.LevelFinished += OnLevelFinished;
 
             // Init after the menu scene is loaded.
-            BS_Utils.Utilities.BSEvents.lateMenuSceneLoadedFresh += (o) =>
+            BSEvents.lateMenuSceneLoadedFresh += (o) =>
             {
                 Log.Info("The menu scene was loaded.");
                 _ = new UnityEngine.GameObject(nameof(SPHController)).AddComponent<SPHController>();
@@ -55,14 +58,10 @@ namespace SongPlayHistoryContinued
         [OnExit]
         public void OnExit()
         {
-            BS_Utils.Utilities.BSEvents.gameSceneLoaded -= OnGameSceneLoaded;
-            BS_Utils.Plugin.LevelDidFinishEvent -= OnLevelFinished;
-            BS_Utils.Plugin.MultiLevelDidFinishEvent -= OnMultilevelFinished;
+            BSEvents.gameSceneLoaded -= OnGameSceneLoaded;
+            BSEvents.LevelFinished -= OnLevelFinished;
 
             SPHModel.BackupRecords();
-
-            Log.Debug("Removing Harmony patches...");
-            _harmony.UnpatchSelf();
         }
 
         private void OnGameSceneLoaded()
@@ -71,23 +70,36 @@ namespace SongPlayHistoryContinued
             _isPractice = practiceSettings != null;
         }
 
-        private void OnLevelFinished(StandardLevelScenesTransitionSetupDataSO scene, LevelCompletionResults result)
+        private void OnLevelFinished(object scene, LevelFinishedEventArgs eventArgs)
         {
-            if (_isPractice || Gamemode.IsPartyActive)
+            if (eventArgs.LevelType != LevelType.Multiplayer && eventArgs.LevelType != LevelType.SoloParty)
             {
                 return;
             }
-            SaveRecord(scene?.difficultyBeatmap, result, false);
-        }
 
-        private void OnMultilevelFinished(MultiplayerLevelScenesTransitionSetupDataSO scene, LevelCompletionResults result, IReadOnlyList<MultiplayerPlayerResultsData> _)
-        {
-            SaveRecord(scene?.difficultyBeatmap, result, true);
+            var result = ((LevelFinishedWithResultsEventArgs)eventArgs).CompletionResults;
+            
+            if (eventArgs.LevelType == LevelType.Multiplayer)
+            {
+                var beatmap = ((MultiplayerLevelScenesTransitionSetupDataSO)scene)?.difficultyBeatmap;
+                SaveRecord(beatmap, result, true);
+            }
+            else
+            {
+                // solo
+                if (_isPractice || Gamemode.IsPartyActive)
+                {
+                    return;
+                }
+                var beatmap = ((StandardLevelScenesTransitionSetupDataSO)scene)?.difficultyBeatmap;
+                SaveRecord(beatmap, result, false);
+            }
+            
         }
 
         private void SaveRecord(IDifficultyBeatmap beatmap, LevelCompletionResults result, bool isMultiplayer)
         {
-            if (result?.rawScore > 0)
+            if (result?.multipliedScore > 0)
             {
                 // Actually there's no way to know if any custom modifier was applied if the user failed a map.
                 var submissionDisabled = ScoreSubmission.WasDisabled || ScoreSubmission.Disabled || ScoreSubmission.ProlongedDisabled;
