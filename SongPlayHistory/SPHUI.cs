@@ -1,10 +1,9 @@
-﻿using System;
+﻿using HMUI;
+using IPA.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BS_Utils.Utilities;
-using HMUI;
-using IPA.Utilities;
 using TMPro;
 using UnityEngine;
 using VRUIControls;
@@ -86,7 +85,7 @@ namespace SongPlayHistoryContinued
                     hoverHint.text = "";
                 }
                 var hoverHintController = Resources.FindObjectsOfTypeAll<HoverHintController>().First();
-                hoverHint.SetPrivateField("_hoverHintController", hoverHintController);
+                hoverHint.SetField("_hoverHintController", hoverHintController);
                 return hoverHint;
             }
         }
@@ -125,9 +124,9 @@ namespace SongPlayHistoryContinued
             }
         }
 
-        public void SetRecords(IDifficultyBeatmap beatmap, List<Record> records)
+        public async void SetRecords(IDifficultyBeatmap beatmap, PlayerData playerData, List<Record> records)
         {
-            if (HoverHint == null || beatmap == null)
+            if (HoverHint == null || beatmap == null || playerData == null)
             {
                 return;
             }
@@ -136,8 +135,9 @@ namespace SongPlayHistoryContinued
             {
                 List<Record> truncated = records.Take(10).ToList();
 
-                var notesCount = beatmap.beatmapData.cuttableNotesCount;
-                var maxScore = ScoreModel.MaxRawScoreForNumberOfNotes(notesCount);
+                var beatmapData = await beatmap.GetBeatmapDataAsync(beatmap.GetEnvironmentInfo(), playerData.playerSpecificSettings);
+                var notesCount = beatmapData.cuttableNotesCount;
+                var maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(beatmapData);
                 var builder = new StringBuilder(200);
 
                 static string ConcatParam(Param param)
@@ -183,9 +183,26 @@ namespace SongPlayHistoryContinued
                 foreach (var r in truncated)
                 {
                     var localDateTime = DateTimeOffset.FromUnixTimeMilliseconds(r.Date).LocalDateTime;
-                    var adjMaxScore = ScoreModel.MaxRawScoreForNumberOfNotes(r.LastNote);
-                    var denom = PluginConfig.Instance.AverageAccuracy && r.LastNote > 0 ? adjMaxScore : maxScore;
-                    var accuracy = r.RawScore / (float)denom * 100f;
+                    
+                    /*
+                     * To get a max possible score of an unfinished level, we need _transformedBeatmapData from ResultsViewController
+                     * Then put it through ScoreModel.ComputeMaxMultipliedScoreForBeatmap
+                     * So there is no way of recovering it from the data we stored in SongPlayData.json
+                     */
+                    
+                    // var adjMaxScore = ScoreModel.MaxRawScoreForNumberOfNotes(r.LastNote);
+                    // var denom = PluginConfig.Instance.AverageAccuracy && r.LastNote > 0 ? adjMaxScore : maxScore;
+                    // var accuracy = r.RawScore / (float)denom * 100f;
+                    
+                    var levelFinished = r.LastNote < 0;
+                    var accuracy = r.RawScore / (float) maxScore * 100f;
+                    
+                    /*
+                     * One possible solution is to get the max possible score when a level finish as mentioned above,
+                     * And store it in SongPlayData.json along all other things.
+                     * Then we can just use this saved max score to calculate acc
+                     */
+
                     var param = ConcatParam((Param)r.Param);
                     if (param.Length == 0 && r.RawScore != r.ModifiedScore)
                     {
@@ -207,6 +224,12 @@ namespace SongPlayHistoryContinued
                         builder.Append($"<size=3.5><color=#ab031fff> {r.Miss}miss</color></size>");
                     }
 
+                    if (levelFinished)
+                    {
+                        // only display acc if the record is a finished level
+                        builder.Append($"<size=3.5><color=#368cc6ff> {accuracy:0.00}%</color></size>");
+
+                    }
                     if (param.Length > 0)
                     {
                         builder.Append($"<size=2><color=#1a252bff> {param}</color></size>");
@@ -232,7 +255,7 @@ namespace SongPlayHistoryContinued
             }
         }
 
-        public void SetStats(IDifficultyBeatmap beatmap, PlayerLevelStatsData stats)
+        public async void SetStats(IDifficultyBeatmap beatmap, PlayerLevelStatsData stats, PlayerData playerData)
         {
             if (beatmap == null || stats == null)
             {
@@ -253,13 +276,13 @@ namespace SongPlayHistoryContinued
             These old version code seem to be dead, but some coder need them.
             So I don't delete them but just make them comment out.
 
-            if (BeatSaberUI.IsSolo && LevelStatsView != null)
+            if (!BeatSaberUI.IsSolo && LevelStatsView != null)
             {
                 var maxCombo = LevelStatsView.GetComponentsInChildren<RectTransform>().First(x => x.name == "MaxCombo");
                 var highscore = LevelStatsView.GetComponentsInChildren<RectTransform>().First(x => x.name == "Highscore");
                 var maxRank = LevelStatsView.GetComponentsInChildren<RectTransform>().First(x => x.name == "MaxRank");
-                var notesCount = beatmap.beatmapData.cuttableNotesCount;
-                var maxScore = ScoreModel.MaxRawScoreForNumberOfNotes(notesCount);
+                var beatmapData = await beatmap.GetBeatmapDataAsync(beatmap.GetEnvironmentInfo(), playerData.playerSpecificSettings);
+                var maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(beatmapData);
                 var estimatedAcc = stats.highScore / (float)maxScore * 100f;
                 SetValue(maxCombo, stats.validScore ? $"{stats.maxCombo} ({records.Last().Miss}miss)" : "-");
                 SetValue(highscore, stats.validScore ? $"{stats.highScore} ({estimatedAcc:0.00}%)" : "-");
